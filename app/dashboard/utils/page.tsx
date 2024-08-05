@@ -93,6 +93,8 @@ const Utils = () => {
         <Spacer x={4} />
         <Input
           type="number"
+          min={50}
+          max={100}
           label="每个表格的ID数量"
           size="sm"
           className="max-w-xs"
