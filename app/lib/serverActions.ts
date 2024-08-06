@@ -13,4 +13,5 @@ export async function parseCSV(content: string) {
   } catch (error) {
     console.error('Error parsing CSV:', error);
   }
+  
 }
