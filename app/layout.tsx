@@ -1,6 +1,9 @@
 import '@/app/ui/global.css';
+import '@/app/ui/preflight.css';
+import '@/public/antd.min.css';
+
 import { inter } from '@/app/ui/fonts';
-import {NextUIProvider} from '@nextui-org/react'
+//import {NextUIProvider} from '@nextui-org/react'
 
 export default function RootLayout({
   children,
@@ -8,11 +11,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className='light'>
+    <html lang="en" className="light">
       <body className={`${inter.className} antialiased`}>
-        <NextUIProvider>
-          {children}
-        </NextUIProvider>
+        {/* <NextUIProvider> */}
+        {children}
+        {/* </NextUIProvider> */}
       </body>
     </html>
   );
