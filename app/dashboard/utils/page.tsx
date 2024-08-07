@@ -2,7 +2,8 @@
 import React, { ChangeEvent } from 'react';
 import Image from 'next/image';
 import { parseCSV } from '@/app/lib/serverActions';
-import { Button, Input } from 'antd';
+import { PlusOutlined } from '@ant-design/icons';
+import { Button, Input, Row, Col, Upload, Alert, message } from 'antd';
 const Textarea = Input.TextArea;
 
 function convertArrayToCSV(ids: string[]) {
@@ -39,37 +40,39 @@ const Utils = () => {
     }
     linkContainerEl?.replaceChildren();
   };
-
-  const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-    if (event.target.files) {
-      const file = event.target.files[0];
-      const reader = new FileReader();
-      reader.readAsText(file);
-      reader.onload = async function (e: ProgressEvent<FileReader>) {
-        if (e.target?.result) {
-          let csv = await parseCSV(e?.target?.result as string);
-          let noIds: string[] = [];
-          let ids: string[] = [];
-          csv.forEach((record: { [key: string]: string }) => {
-            if (record['达人ID']) {
-              ids.push(record['达人ID']);
-            } else {
-              noIds.push(record['序号'] as string);
-            }
-          });
-          let i = `共找到${ids.length}个达人ID\n${noIds.length}个达人没有ID\n预计生成${Math.ceil(ids.length / batchSize)}个表格\n`;
-          if (noIds.length > 0) {
-            i += `没有ID的达人序号: ${noIds.join(',')}\n`;
-          }
-          if (ids.length > 0) {
-            i += `有ID的达人ID: \n ${ids.join(',\n')}\n`;
-          }
-          setInfo(i);
-          setAffiliateIds(ids);
-          setCsvData(csv);
-        }
-      };
+  const handleBeforeUpload = (file: File) => {
+    const isCSV = file.type === 'text/csv';
+    if (!isCSV) {
+      message.error({
+        content: '只能上传CSV文件',
+      });
     }
+    const reader = new FileReader();
+    reader.readAsText(file);
+    reader.onload = async function (e: ProgressEvent<FileReader>) {
+      if (e.target?.result) {
+        let csv = await parseCSV(e.target.result as string);
+        let noIds: string[] = [];
+        let ids: string[] = [];
+        csv.forEach((record: { [key: string]: string }) => {
+          if (record['达人ID']) {
+            ids.push(record['达人ID']);
+          } else {
+            noIds.push(record['序号'] as string);
+          }
+        });
+        let i = `共找到${ids.length}个达人ID\n${noIds.length}个达人没有ID\n预计生成${Math.ceil(ids.length / batchSize)}个表格\n`;
+        if (noIds.length > 0) {
+          i += `没有ID的达人序号: ${noIds.join(',')}\n`;
+        }
+        if (ids.length > 0) {
+          i += `有ID的达人ID: \n ${ids.join(',\n')}\n`;
+        }
+        setInfo(i);
+        setAffiliateIds(ids);
+        setCsvData(csv);
+      }
+    };
   };
 
   const handleChangeBatchSize = (e: ChangeEvent<HTMLInputElement>) => {
@@ -81,31 +84,57 @@ const Utils = () => {
     try {
       downloadCSV(affiliateIds);
     } catch (error) {
-      console.error('Error uploading file:', error);
+      message.error({
+        content: '下载失败, 请联系管理员',
+      });
     }
   };
 
   return (
     <React.Fragment>
-      <div className="flex min-h-screen flex-col items-start py-2">
-        <input
-          type="file"
-          multiple={true}
-          onChange={handleFileChange}
-          className="mb-4"
-        />
-        <Input
-          type="number"
-          min={50}
-          max={100}
-          className="max-w-xs"
-          onChange={handleChangeBatchSize}
-          value={batchSize.toString()}
-        />
-        <Textarea disabled={true} value={info} rows={10}/>
-        <Button type='primary' onClick={handleParseCSV}>Dowload</Button>
-        <div id="download-links"></div>
-      </div>
+      <Alert
+        showIcon={true}
+        message={`使用说明: 从达人建联表格中下载表格为CSV格式，确保里面达人ID那一列叫做"达人ID"。然后点击Upload上传文件，等待解析。最后点击Download按钮下载。`}
+        type="info"
+      />
+
+      <Row>
+        <Col span={12}>
+          <Upload
+            maxCount={1}
+            listType="picture-circle"
+            beforeUpload={handleBeforeUpload}
+          >
+            <button style={{ border: 0, background: 'none' }} type="button">
+              <PlusOutlined />
+              <div style={{ marginTop: 8 }}>Upload</div>
+            </button>
+          </Upload>
+        </Col>
+      </Row>
+      <Row>
+        <Col span={12} md={{ span: 8 }}>
+          <Input
+            type="number"
+            addonBefore="达人/表格"
+            onChange={handleChangeBatchSize}
+            value={batchSize.toString()}
+          />
+        </Col>
+      </Row>
+      <Row>
+        <Col span={24}>
+          <Textarea disabled={true} value={info} rows={10} />
+        </Col>
+      </Row>
+      <Row>
+        <Col span={24}>
+          <Button type="primary" onClick={handleParseCSV}>
+            Dowload
+          </Button>
+        </Col>
+      </Row>
+      <div id="download-links"></div>
     </React.Fragment>
   );
 };

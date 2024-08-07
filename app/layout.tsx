@@ -1,6 +1,5 @@
 import '@/app/ui/global.css';
 import { inter } from '@/app/ui/fonts';
-import { NextUIProvider } from '@nextui-org/react';
 import { AntdRegistry } from '@ant-design/nextjs-registry';
 
 export default function RootLayout({
