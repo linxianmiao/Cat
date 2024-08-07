@@ -3,17 +3,20 @@
   "scripts": {
     "build": "next build",
     "dev": "next dev",
+    "lint": "next lint",
     "prettier": "prettier --write --ignore-unknown .",
     "prettier:check": "prettier --check --ignore-unknown .",
-    "start": "next start",
-    "seed": "node -r dotenv/config ./scripts/seed.js"
+    "seed": "node -r dotenv/config ./scripts/seed.js",
+    "start": "next start"
   },
   "dependencies": {
+    "@ant-design/nextjs-registry": "1.0.1",
     "@heroicons/react": "^2.0.18",
     "@nextui-org/react": "^2.4.6",
     "@tailwindcss/forms": "^0.5.7",
     "@types/node": "20.5.7",
     "@vercel/postgres": "^0.5.1",
+    "antd": "^5.20.0",
     "autoprefixer": "10.4.15",
     "bcrypt": "^5.1.1",
     "clsx": "^2.0.0",
