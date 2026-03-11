@@ -60,7 +60,7 @@
 
 <script setup lang="ts">
 import { ref, onUnmounted } from 'vue'
-import { Upload, Camera, Sparkles, Heart, Wand2, Share2, Download, ChevronRight, Users, Zap, Star, Brain } from 'lucide-vue-next';
+import { Sparkles } from 'lucide-vue-next';
 import { analyzeCat, type CatAnalysisResult } from '../api/cat'
 import { compressImage } from '../utils/image'
 
@@ -159,7 +159,7 @@ async function handleFileChange(e: Event) {
   const input = e.target as HTMLInputElement
   const file = input.files?.[0]
   if (!file || !file.type.startsWith('image/')) {
-    toast.show({ message: '请选择图片文件' })
+
     input.value = ''
     return
   }
@@ -174,7 +174,7 @@ async function handleFileChange(e: Event) {
     URL.revokeObjectURL(url)
     state.value = 'preview'
   } catch {
-    toast.show({ message: '图片加载失败，请重试' })
+
   }
 }
 
@@ -192,9 +192,6 @@ async function handleAnalyze() {
     fileId.value = generateFileId()
     state.value = 'done'
   } catch (err) {
-    toast.show({
-      message: err instanceof Error ? err.message : '识别失败，请稍后重试',
-    })
     state.value = 'preview'
   } finally {
     stopProgress()
