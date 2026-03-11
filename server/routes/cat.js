@@ -3,7 +3,7 @@ import { Router } from 'express'
 const router = Router()
 
 const API_BASE = 'https://llm.ai-nebula.com'
-const MODEL = 'doubao-seed-2-0-pro-260215'
+const MODEL = 'claude-opus-4-6'
 
 function parseImageInput(image) {
   if (image.startsWith('data:')) {
@@ -12,22 +12,34 @@ function parseImageInput(image) {
   return `data:image/jpeg;base64,${image}`
 }
 
-const PROMPT = `你是一个专业的猫咪面相分析师。请根据用户上传的猫图片进行全面分析，返回以下信息：
+const PROMPT = `你是"喵相馆"首席猫咪面相分析师和猫咪心理学专家。请根据用户上传的猫咪图片进行全面深度面相分析，返回以下所有字段：
 
-1. breed：猫的品种中文名
-2. cutenessScore：根据猫的外表给出 60-99 之间的可爱评分（整数）
-3. personality：3 个性格标签（每个 2-4 个字，如"聪明伶俐"、"话痨属性"）
-4. mood：根据猫的表情和姿势推测当前心情（4-8 个字）
-5. features：3 个外观独特之处（每条 5-10 个字的短语）
-6. fortune：根据猫的面相编一段有趣的今日运势（15-25 个字）
+1. breed：猫的品种中文名（如"英国短毛猫"、"橘猫"、"布偶猫"、"狸花猫"、“金点”、“银点”、“美短”等，尽量精确）
+2. nickname：根据猫的外貌气质起一个有趣的 2-5 字昵称（如"贵族小可爱"、"暗夜猎手"、"甜心棉花糖"、"傲娇女王"）
+3. rarity：稀有度评级，必须是以下四个值之一："普通"、"稀有"、"史诗"、"传说"。根据品种稀有程度和外貌独特性综合判定，大部分猫应为"稀有"或"史诗"级别
+4. cutenessScore：可爱值评分，60-99 之间的整数
+5. mbti：为这只猫分析一个 MBTI 性格类型，包含以下子字段：
+   - type：四字母 MBTI 类型代码（如"INFJ"、"ENFP"、"ISTP"等，请根据猫的行为特征认真分析选择）
+   - label：类型中文标签（格式为"XXXX 型人格"，如"INFJ 型人格"）
+   - dimensions：必须包含 4 个维度对象的数组，按顺序分别对应 MBTI 的四个维度：
+     第1个：letter 为 "I" 或 "E"，name 为"内向"或"外向"，description 为基于这只猫特征的维度描述（10-20字）
+     第2个：letter 为 "N" 或 "S"，name 为"直觉"或"感觉"，description 为基于这只猫特征的维度描述（10-20字）
+     第3个：letter 为 "F" 或 "T"，name 为"情感"或"思维"，description 为基于这只猫特征的维度描述（10-20字）
+     第4个：letter 为 "J" 或 "P"，name 为"判断"或"知觉"，description 为基于这只猫特征的维度描述（10-20字）
+6. personality：3 个性格标签（每个 2-4 个字，如"高贵优雅"、"温柔体贴"、"暗带傲娇"）
+7. mood：根据猫的表情和姿势推测当前状态（3-6 个字，如"心情愉悦"、"慵懒惬意"、"警觉观察"）
+8. socialScore：社交指数，0-100 之间的整数，表示猫咪的社交能力和亲人程度
+9. features：3 个外观上的独特特征（每条 5-10 个字的短语，如"圆圆的大眼睛"、"柔软的毛发"）
+10. fortune：根据猫的面相编一段有趣具体的今日运势（25-50 个字，要包含具体时间和行为建议，如"今日运势极佳！适合撒娇要零食，成功率99%。下午3点是最佳时机哦~"）
+11. ownerTip：铲屎官贴士，给猫主人的实用建议（20-40 个字，如"你家主子今天心情不错，记得多陪TA玩耍，会收获更多亲昵哦！"）
 
-如果图片中明显不是猫，请返回：{"breed":"无法识别","cutenessScore":0,"personality":[],"mood":"","features":[],"fortune":"这张图片中似乎没有猫猫哦，请上传一张清晰的猫猫照片～"}
+如果图片中明显不是猫（如狗、其他动物、非动物等），请返回：
+{"breed":"无法识别","nickname":"未知生物","rarity":"普通","cutenessScore":0,"mbti":{"type":"????","label":"未知型人格","dimensions":[{"letter":"?","name":"未知","description":"需要一张猫猫照片才能分析哦"}]},"personality":[],"mood":"","socialScore":0,"features":[],"fortune":"这张图片中似乎没有猫猫哦，请上传一张清晰的猫猫照片~","ownerTip":"先找到你的猫猫再来吧"}
 
-请严格以 JSON 格式返回，不要包含 markdown 或其他文字：
-{"breed":"品种名","cutenessScore":85,"personality":["标签1","标签2","标签3"],"mood":"心情描述","features":["特征1","特征2","特征3"],"fortune":"运势描述"}`
+请严格以 JSON 格式返回，不要包含 markdown 代码块标记或任何其他非 JSON 文字，直接返回 JSON 对象：
+{"breed":"品种名","nickname":"昵称","rarity":"稀有度","cutenessScore":85,"mbti":{"type":"INFJ","label":"INFJ 型人格","dimensions":[{"letter":"I","name":"内向","description":"维度描述"},{"letter":"N","name":"直觉","description":"维度描述"},{"letter":"F","name":"情感","description":"维度描述"},{"letter":"J","name":"判断","description":"维度描述"}]},"personality":["标签1","标签2","标签3"],"mood":"心情描述","socialScore":85,"features":["特征1","特征2","特征3"],"fortune":"运势描述","ownerTip":"铲屎官建议"}`
 
 router.post('/analyze-cat', async (req, res) => {
-  console.log('asdasdasdasd')
   try {
     const { image } = req.body
     if (!image || typeof image !== 'string') {
@@ -50,7 +62,7 @@ router.post('/analyze-cat', async (req, res) => {
         },
         body: JSON.stringify({
           model: MODEL,
-          max_tokens: 1024,
+          max_tokens: 2048,
           messages: [
             {
               role: 'user',

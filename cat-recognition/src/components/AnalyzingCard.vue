@@ -1,69 +1,30 @@
 <script setup lang="ts">
+import { Wand2, Users } from 'lucide-vue-next';
+import Card from './Card.vue';
 defineProps<{
   text: string
+  progress: number
+  onlineCount: number
 }>()
 </script>
 
 <template>
-  <div class="analyzing-card">
-    <p class="analyzing-title">🔮 AI正在分析中...</p>
-    <div class="progress-track">
-      <div class="progress-fill"></div>
+  <Card class="bg-white pt-7 pb-5 px-5 text-center ">
+    <div class="text-[28px] mb-3 flex justify-center">
+      <Wand2 class="text-purple-500 animate-spin" />
     </div>
-    <p class="analyzing-status">{{ text }}</p>
-  </div>
+    <p class="text-base font-semibold text-gray-700 m-0 mb-1.5">{{ text }}</p>
+    <div class="h-2 bg-gray-200 rounded overflow-hidden mb-2">
+      <div
+        class="h-full bg-gradient-to-r from-gray-900 to-gray-500 rounded transition-[width] duration-400 ease-out"
+        :style="{ width: Math.round(progress) + '%' }"
+      ></div>
+    </div>
+    <p class="text-[13px] text-gray-500 m-0 mb-3.5">{{ Math.round(progress) }}%</p>
+    <div class="h-px bg-gray-100 mb-3.5"></div>
+    <p class="text-[12px] text-gray-500 m-0 flex justify-center items-center gap-[4px]">
+      <Users class="w-[11px]"/>
+      此刻有 {{ onlineCount }} 位铲屎官也在分析中...
+    </p>
+  </Card>
 </template>
-
-<style scoped>
-.analyzing-card {
-  background: #fff;
-  border-radius: 16px;
-  padding: 24px 20px;
-  text-align: center;
-  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
-}
-
-.analyzing-title {
-  font-size: 16px;
-  font-weight: 600;
-  color: #333;
-  margin: 0 0 16px;
-}
-
-.progress-track {
-  height: 8px;
-  background: #e8e8e8;
-  border-radius: 4px;
-  overflow: hidden;
-  margin-bottom: 14px;
-}
-
-.progress-fill {
-  height: 100%;
-  width: 25%;
-  background: linear-gradient(90deg, #1a1a2e, #444);
-  border-radius: 4px;
-  animation: slide 2s ease-in-out infinite;
-}
-
-@keyframes slide {
-  0% {
-    width: 10%;
-    margin-left: 0;
-  }
-  50% {
-    width: 35%;
-    margin-left: 35%;
-  }
-  100% {
-    width: 10%;
-    margin-left: 90%;
-  }
-}
-
-.analyzing-status {
-  font-size: 13px;
-  color: #aaa;
-  margin: 0;
-}
-</style>

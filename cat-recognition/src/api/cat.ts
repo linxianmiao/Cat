@@ -1,10 +1,27 @@
+export interface MbtiDimension {
+  letter: string
+  name: string
+  description: string
+}
+
+export interface CatMbti {
+  type: string
+  label: string
+  dimensions: MbtiDimension[]
+}
+
 export interface CatAnalysisResult {
   breed: string
+  nickname: string
+  rarity: '普通' | '稀有' | '史诗' | '传说'
   cutenessScore: number
+  mbti: CatMbti
   personality: string[]
   mood: string
+  socialScore: number
   features: string[]
   fortune: string
+  ownerTip: string
 }
 
 export async function analyzeCat(imageBase64: string): Promise<CatAnalysisResult> {

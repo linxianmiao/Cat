@@ -1,12 +1,9 @@
 <script setup lang="ts">
-import { DuToastProvider } from 'dangoui'
 import Index from './views/Index.vue'
 </script>
 
 <template>
-  <DuToastProvider>
-    <Index />
-  </DuToastProvider>
+  <Index />
 </template>
 
 <style>
