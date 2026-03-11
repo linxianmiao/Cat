@@ -1,0 +1,12 @@
+{
+  "buildCommand": "cd cat-recognition && npm install && npm run build",
+  "outputDirectory": "cat-recognition/dist",
+  "rewrites": [
+    { "source": "/api/analyze-cat", "destination": "/api/analyze-cat" }
+  ],
+  "functions": {
+    "api/analyze-cat.js": {
+      "maxDuration": 60
+    }
+  }
+}
