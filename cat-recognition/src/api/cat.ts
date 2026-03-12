@@ -24,8 +24,10 @@ export interface CatAnalysisResult {
   ownerTip: string
 }
 
+const API_BASE = import.meta.env.VITE_API_BASE || ''
+
 export async function analyzeCat(imageBase64: string): Promise<CatAnalysisResult> {
-  const res = await fetch('/api/analyze-cat', {
+  const res = await fetch(`${API_BASE}/api/analyze-cat`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
